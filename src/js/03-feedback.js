@@ -6,7 +6,8 @@ const formSubmit = document.querySelector('.feedback-form');
 
 const STORAGE_FORM = 'feedback-form-state';
 
-const formData = {};
+let savedData;
+let formData = {};
 
 onPageReload();
 
@@ -14,10 +15,28 @@ formSubmit.addEventListener('input', throttle(onFormInput), 500);
 formSubmit.addEventListener('submit', onFormSubmit);
 
 function onFormInput(evt) {
+  savedData = localStorage.getItem(STORAGE_FORM);
+
+  if (savedData) {
+    const parsedData = JSON.parse(savedData);
+
+    if (parsedData.email !== '') {
+      formData.email = parsedData.email;
+    }
+
+    if (parsedData.message !== '') {
+      formData.message = parsedData.message;
+    }
+
+    formData[evt.target.name] = evt.target.value;
+    localStorage.setItem(STORAGE_FORM, JSON.stringify(formData));
+  }
+
   // console.log(evt.target.name);
   // console.log(evt.target.value);
-  formData[evt.target.name] = evt.target.value;
   // console.log(formData);
+
+  formData[evt.target.name] = evt.target.value;
   localStorage.setItem(STORAGE_FORM, JSON.stringify(formData));
 }
 
@@ -25,29 +44,29 @@ function onPageReload() {
   const savedData = localStorage.getItem(STORAGE_FORM);
   // console.log(savedData);
 
-  const parsedData = JSON.parse(savedData);
+  if (savedData) {
+    const parsedData = JSON.parse(savedData);
+
+    if (parsedData.email) {
+      formEmail.value = parsedData.email;
+    }
+
+    if (parsedData.message) {
+      formTextArea.value = parsedData.message;
+    }
+  }
+
   // console.log(parsedData);
   // console.log(parsedData.email);
   // console.log(parsedData.message);
-
-  if (parsedData) {
-    formEmail.value = parsedData.email;
-    // console.log('EMAIL ЕСТЬ');
-  }
-  if (parsedData) {
-    formTextArea.value = parsedData.message;
-    // console.log('MESSAGE EСТЬ');
-  }
 }
 
 function onFormSubmit(evt) {
   evt.preventDefault();
 
-  formData.email = formEmail.value;
-  formData.message = formTextArea.value;
-
   console.log('FINAL FORM DATA ', formData);
   //   evt.currentTarget.reset();
   formSubmit.reset();
   localStorage.removeItem(STORAGE_FORM);
+  formData = {};
 }
