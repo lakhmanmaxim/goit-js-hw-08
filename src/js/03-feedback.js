@@ -64,7 +64,10 @@ function onPageReload() {
 function onFormSubmit(evt) {
   evt.preventDefault();
 
-  console.log('FINAL FORM DATA ', formData);
+  savedData = localStorage.getItem(STORAGE_FORM);
+  formData = JSON.parse(savedData);
+
+  console.log('FORM DATA ', formData);
   //   evt.currentTarget.reset();
   formSubmit.reset();
   localStorage.removeItem(STORAGE_FORM);
